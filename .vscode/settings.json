@@ -1,0 +1,29 @@
+{
+	"[luau]": {
+		"editor.defaultFormatter": "JohnnyMorganz.stylua",
+		// At some point with a VS Code update autocomplete completely stopped working; this is what fixed it.
+		"editor.quickSuggestions": {
+			"other": "on",
+			"comments": "off",
+			"strings": "on"
+		},
+		"editor.suggestOnTriggerCharacters": true,
+		"editor.wordBasedSuggestions": "off"
+	},
+	"editor.tabSize": 4,
+	"editor.useTabStops": true,
+	"editor.insertSpaces": false,
+	"editor.detectIndentation": false,
+	"editor.formatOnSave": true,
+	"files.insertFinalNewline": true,
+	"workbench.colorCustomizations": {
+		"editor.wordHighlightBackground": "#ffff00f3",
+		"editor.wordHighlightStrongBackground": "#ffff00f3"
+	},
+	"cSpell.words": [
+		"isnan",
+		"Rojo",
+		"tonumber",
+		"xpcall"
+	]
+}

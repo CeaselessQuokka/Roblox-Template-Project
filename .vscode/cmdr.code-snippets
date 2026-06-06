@@ -1,0 +1,49 @@
+{
+	"Cmdr Definition": {
+		"scope": "lua,luau",
+		"prefix": [
+			"cmdrDef",
+			"def",
+			"definition"
+		],
+		"description": "Generates a template Cmdr definition.",
+		"body": [
+			"-- Cmdr ${1:$TM_FILENAME_BASE} Definition --",
+			"return {",
+			"\tName = \"${2}\",",
+			"\tAliases = { \"${3}\" },",
+			"\tDescription = \"${4}\",",
+			"\tGroup = \"${5:Admin}\",",
+			"\tArgs = {",
+			"\t\t{",
+			"\t\t\tType = \"${6:players}\",",
+			"\t\t\tName = \"${7}\",",
+			"\t\t\tDescription = \"${8}\",",
+			"\t\t},",
+			"\t\t{",
+			"\t\t\tType = \"${9:player}\",",
+			"\t\t\tName = \"${10}\",",
+			"\t\t\tDescription = \"${11}\",",
+			"\t\t},",
+			"\t},",
+			"}",
+			""
+		]
+	},
+	"Cmdr Handler": {
+		"scope": "lua,luau",
+		"prefix": [
+			"cmdrHandler",
+			"handler"
+		],
+		"description": "Generates a template Cmdr handler.",
+		"body": [
+			"-- Cmdr ${1:$TM_FILENAME_BASE} Handler --",
+			"return function(context, ${2:arg1}: ${3:unknown}, ${4:arg2}: ${5:unknown}): string?",
+			"\t${6}",
+			"\treturn \"${7:Optional return message}\"",
+			"end",
+			""
+		]
+	}
+}

@@ -1,0 +1,21 @@
+{
+	"name": "project-name",
+	"emitLegacyScripts": false,
+	"tree": {
+		"$className": "DataModel",
+		"ReplicatedStorage": {
+			"$ignoreUnknownInstances": true,
+			"$path": "src/ReplicatedStorage",
+			"Packages": {
+				"$path": "Packages"
+			}
+		},
+		"ServerScriptService": {
+			"$ignoreUnknownInstances": true,
+			"$path": "src/ServerScriptService",
+			"Packages": {
+				"$path": "ServerPackages"
+			}
+		}
+	}
+}

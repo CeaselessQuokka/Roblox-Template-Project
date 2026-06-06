@@ -1,0 +1,67 @@
+{
+	"Service": {
+		"scope": "lua,luau",
+		"prefix": [
+			"service"
+		],
+		"description": "Generates a template service based on the file name.",
+		"body": [
+			"--!strict",
+			"-- Services --",
+			"",
+			"-- Imports --",
+			"",
+			"-- Types --",
+			"",
+			"-- Variables --",
+			"",
+			"-- Functions --",
+			"",
+			"-- ${2:$TM_FILENAME_BASE} Service --",
+			"local ${1:$TM_FILENAME_BASE} = {}",
+			"type ${1:$TM_FILENAME_BASE} = typeof(${1:$TM_FILENAME_BASE})",
+			"",
+			"function ${1:$TM_FILENAME_BASE}.Initialize(self: ${1:$TM_FILENAME_BASE})",
+			"\t${3}",
+			"end",
+			"",
+			"function ${1:$TM_FILENAME_BASE}.Start(self: ${1:$TM_FILENAME_BASE}) end",
+			"",
+			"return ${1:$TM_FILENAME_BASE}",
+			""
+		]
+	},
+	"Controller": {
+		"scope": "lua,luau",
+		"prefix": [
+			"controller"
+		],
+		"description": "Generates a template controller based on the file name.",
+		"body": [
+			"--!strict",
+			"-- Services --",
+			"",
+			"-- Imports --",
+			"",
+			"-- Types --",
+			"",
+			"-- Variables --",
+			"",
+			"-- Functions --",
+			"",
+			"-- ${2:$TM_FILENAME_BASE} Controller --",
+			"local ${1:$TM_FILENAME_BASE} = {}",
+			"type ${1:$TM_FILENAME_BASE} = typeof(${1:$TM_FILENAME_BASE})",
+			"",
+			"function ${1:$TM_FILENAME_BASE}.Initialize(self: ${1:$TM_FILENAME_BASE})",
+			"\t${3}",
+			"end",
+			"",
+			"function ${1:$TM_FILENAME_BASE}.Start(self: ${1:$TM_FILENAME_BASE}) end",
+			"",
+			"return ${1:$TM_FILENAME_BASE}",
+			"",
+			""
+		]
+	}
+}
