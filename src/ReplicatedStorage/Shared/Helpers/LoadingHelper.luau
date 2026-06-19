@@ -42,12 +42,12 @@ const function GetModules(root: Instance, deep: boolean?): { ModuleScript }
 end
 
 -- Loading Helper --
-local LoadingHelper = {}
+const LoadingHelper = {}
 
 -- Yields until initialization is complete (or errors).
 function LoadingHelper.InitializeSingleton(singletonModule: ModuleScript)
 	xpcall(function()
-		local singleton = (require)(singletonModule) :: Singleton
+		const singleton = (require)(singletonModule) :: Singleton
 		if
 			typeof(singleton) == "table"
 			and typeof(singleton.Initialize) == "function"
@@ -61,7 +61,7 @@ end
 -- Does not yield.
 function LoadingHelper.StartSingleton(singletonModule: ModuleScript)
 	task.spawn(xpcall, function()
-		local singleton = (require)(singletonModule) :: Singleton
+		const singleton = (require)(singletonModule) :: Singleton
 		if typeof(singleton) == "table" and typeof(singleton.Start) == "function" and singleton.Enabled ~= false then
 			singleton:Start()
 		end
@@ -74,7 +74,7 @@ function LoadingHelper.LoadSingletons(root: Instance, deep: boolean?)
 	Random.new():Shuffle(singletonModules)
 
 	-- Wait for all singletons to initialize.
-	local singletonsLeft: { [ModuleScript]: true? } = {}
+	const singletonsLeft: { [ModuleScript]: true? } = {}
 	for _, singletonModule in singletonModules do
 		singletonsLeft[singletonModule] = true
 		task.spawn(function()
@@ -86,7 +86,7 @@ function LoadingHelper.LoadSingletons(root: Instance, deep: boolean?)
 	local startTime = os.clock()
 	while next(singletonsLeft) do
 		if os.clock() - startTime >= 10 then
-			local singletonNames: { string } = {}
+			const singletonNames: { string } = {}
 			for singletonModule in singletonsLeft do
 				table.insert(singletonNames, singletonModule.Name)
 			end

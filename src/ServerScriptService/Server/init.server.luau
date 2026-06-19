@@ -1,13 +1,13 @@
 --!strict
 -- Services --
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
+const ReplicatedStorage = game:GetService("ReplicatedStorage")
+const RunService = game:GetService("RunService")
 
 -- Imports --
-local Cmdr: any = require(ReplicatedStorage.Packages.Cmdr)
+const Cmdr: any = require(ReplicatedStorage.Packages.Cmdr)
 
-local LoadingHelper = require(ReplicatedStorage.Shared.Helpers.LoadingHelper)
-local PermissionHelper = require(script.Helpers.PermissionHelper)
+const LoadingHelper = require(ReplicatedStorage.Shared.Helpers.LoadingHelper)
+const PermissionHelper = require(script.Helpers.PermissionHelper)
 
 -- Initialize Server --
 -- Load services and components.
@@ -20,6 +20,6 @@ Cmdr:RegisterDefaultCommands()
 Cmdr:RegisterCommandsIn(script.Cmdr.Commands)
 Cmdr:RegisterTypesIn(script.Cmdr.Types)
 Cmdr.Registry:RegisterHook("BeforeRun", function(context): string?
-	local isAuthorized = RunService:IsStudio() or PermissionHelper.HasPermission(context.Executor, "Cmdr")
+	const isAuthorized = RunService:IsStudio() or PermissionHelper.HasPermission(context.Executor, "Cmdr")
 	return if not isAuthorized then "You do not have permission to run this command." else nil
 end)

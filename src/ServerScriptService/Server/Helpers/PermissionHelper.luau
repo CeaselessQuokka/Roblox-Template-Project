@@ -1,26 +1,26 @@
 --!strict
 -- Services --
-local ConfigService = game:GetService("ConfigService")
+const ConfigService = game:GetService("ConfigService")
 
 -- Types --
 export type UserId = number
 export type Permissions = { [UserId]: { [Permission]: boolean? } }
 
 -- Variables --
-local USE_CONFIG_SERVICE = true -- When true will query ConfigService for permissions if the user ID is not already cached (subject to CACHE_DURATION and CACHE_JITTER).
-local CACHE_DURATION = 60 -- How long (in seconds) permissions should be cached before checking ConfigService again.
-local CACHE_JITTER = 30 -- Random amount of seconds to add to the cache duration to help ease thundering herd.
+const USE_CONFIG_SERVICE = true -- When true will query ConfigService for permissions if the user ID is not already cached (subject to CACHE_DURATION and CACHE_JITTER).
+const CACHE_DURATION = 60 -- How long (in seconds) permissions should be cached before checking ConfigService again.
+const CACHE_JITTER = 30 -- Random amount of seconds to add to the cache duration to help ease thundering herd.
 
-local VALID_PERMISSIONS = {
+const VALID_PERMISSIONS = {
 	Cmdr = true,
 }
 export type Permission = keyof<typeof(VALID_PERMISSIONS)>
 
+const permissions: Permissions = {}
 local cacheResetTimestamp = 0
-local permissions: Permissions = {}
 
 -- Permissions Helper --
-local PermissionHelper = {}
+const PermissionHelper = {}
 
 -- Queries ConfigService for on-the-fly permission checking if the player is not already cached.
 -- This allows the giving and taking of permissions in real-time without having to update this script and the
@@ -51,7 +51,7 @@ function PermissionHelper.HasPermission(playerOrUserId: Player | UserId, permiss
 	-- Merge loaded permissions with cached permissions.
 	for loadedUserId, userPermissions in loadedPermissions do
 		-- Ensure user ID is a number.
-		local sanitizedUserId = tonumber(loadedUserId)
+		const sanitizedUserId = tonumber(loadedUserId)
 		if not sanitizedUserId then
 			warn(`[{script.Name}] Invalid user ID loaded from ConfigService: "{loadedUserId}" ({typeof(loadedUserId)})`)
 			continue

@@ -1,0 +1,136 @@
+--[[
+	A cleanup manager similar to Trove, Maid, and Janitor but also:
+		- Stops AnimationTracks and cancels Tweens before destroying them.
+		- Ensures no errors are thrown in the main thread when cleaning.
+		- Provides a way to remove (RemoveWithoutCleaning) a trackable without cleaning it.
+--]]
+
+--!strict
+--- Types ---
+export type Trackable = thread | Callable | Disconnectable | Destroyable | Instance | RBXScriptConnection
+export type Callable = (...any) -> ...any
+export type Disconnectable = { Disconnect: (self: any) -> () }
+export type Destroyable = { Destroy: (self: any) -> () }
+
+--- Variables ---
+const NIL_SYMBOL = newproxy(false)
+const ROBLOX_WARN = warn
+
+--- Functions ---
+const function warn(message: string, ...: any)
+	ROBLOX_WARN(debug.traceback(`[{script.Name}] {message}`), ...)
+end
+
+--- Cleaner Class ---
+const Cleaner = {}
+Cleaner.__index = Cleaner
+
+export type Cleaner = setmetatable<{
+	_tracked: { [Trackable]: any },
+}, typeof(Cleaner)>
+function Cleaner.new(): Cleaner
+	return setmetatable({ _tracked = {} }, Cleaner)
+end
+
+function Cleaner.Add<T>(self: Cleaner, trackable: T & Trackable, funcArg: any): T
+	if trackable == nil then
+		return trackable
+	end
+
+	const tracked = self._tracked
+	if tracked[trackable] ~= nil then
+		warn(`Attempt to Add duplicate Trackable: "{trackable}" ({typeof(trackable)})`, trackable)
+		return trackable
+	end
+	tracked[trackable] = if funcArg == nil then NIL_SYMBOL else funcArg
+	return trackable
+end
+
+function Cleaner.Remove<T>(self: Cleaner, trackable: T & Trackable): boolean
+	const funcArg = self._tracked[trackable]
+	if self:RemoveWithoutCleaning(trackable) then
+		self:_CleanTrackable(trackable, funcArg)
+		return true
+	end
+	return false
+end
+
+function Cleaner.RemoveWithoutCleaning<T>(self: Cleaner, trackable: T & Trackable): boolean
+	const tracked = self._tracked
+	if tracked[trackable] == nil then
+		return false
+	end
+
+	tracked[trackable] = nil
+	return true
+end
+
+function Cleaner.Clean(self: Cleaner)
+	for tracked, funcArg in self._tracked do
+		self:_CleanTrackable(tracked, funcArg)
+	end
+	table.clear(self._tracked)
+end
+Cleaner.Destroy = Cleaner.Clean
+
+function Cleaner._CleanTrackable<T>(self: Cleaner, trackable: T & Trackable, funcArg: any)
+	const function CleanupTable(trackable: any, funcArg: any)
+		const cleanupFn: Callable = trackable.Destroy or trackable.Disconnect
+		if cleanupFn then
+			cleanupFn(trackable)
+		else
+			if funcArg ~= NIL_SYMBOL then
+				const cleanupFunction = trackable[funcArg]
+				if typeof(cleanupFunction) == "function" then
+					(cleanupFunction :: Callable)(trackable)
+					return
+				else
+					warn(
+						`Unable to cleanup table Trackable with function key "{funcArg}" ({typeof(funcArg)}): "{cleanupFunction}"`,
+						trackable
+					)
+				end
+			else
+				warn(
+					`Unable to cleanup table Trackable: "{next(trackable)}" = "{select(2, next(trackable))}"`,
+					trackable
+				)
+			end
+		end
+	end
+	print("cleanuptable", CleanupTable)
+
+	const function GetSecondaryInstanceCleanupFunction(trackable: Instance): Callable?
+		if trackable:IsA("AnimationTrack") then
+			return trackable.Stop :: Callable
+		elseif trackable:IsA("Tween") then
+			return trackable.Cancel :: Callable
+		else
+			return nil
+		end
+	end
+	print("getsecondary", GetSecondaryInstanceCleanupFunction)
+
+	const typeOf = typeof(trackable)
+	if typeOf == "thread" then
+		pcall(task.cancel, trackable)
+	elseif typeOf == "function" then
+		task.spawn(trackable, if funcArg == NIL_SYMBOL then nil else funcArg)
+	elseif typeOf == "table" then
+		task.spawn(CleanupTable, trackable, funcArg)
+	elseif typeOf == "RBXScriptConnection" then
+		(trackable :: RBXScriptConnection):Disconnect()
+	elseif typeOf == "Instance" then
+		const instanceTrackable: Instance = trackable
+		const cleanupFn = GetSecondaryInstanceCleanupFunction(instanceTrackable)
+		if cleanupFn then
+			-- Give (https://devforum.roblox.com/t/deferred-engine-events/2276564) time for events to fire before destroying.
+			task.delay(0, pcall, instanceTrackable.Destroy, instanceTrackable)
+			cleanupFn(instanceTrackable)
+		else
+			pcall(instanceTrackable.Destroy, instanceTrackable)
+		end
+	end
+end
+
+return Cleaner
